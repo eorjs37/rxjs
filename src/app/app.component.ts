@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription,of, filter, map, from, fromEvent } from 'rxjs';
+import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +10,9 @@ export class AppComponent implements OnInit{
   subscription:Subscription | undefined;
   title = 'ngrx';
 
+  constructor(){
+
+  }
   
   ngOnInit(){
     console.log('Subscription');
@@ -25,6 +28,10 @@ export class AppComponent implements OnInit{
     //fromEvent
     console.log('fromEvent');
     this.fromEvent();
+
+    //mergeAll
+    console.log('getMergeAll');
+    this.getMergeAll();
   }
 
   /**
@@ -41,9 +48,20 @@ export class AppComponent implements OnInit{
    * @description : fromEvent
    */
   fromEvent(){
-    // const btn = document.getElementById('btn');
+    const btn = document.getElementById('btn') as HTMLElement; //타입 변환
+    const source = fromEvent(btn,'click');
+    source.subscribe(console.log);
+  }
 
-    // const source = fromEvent(btn,'click');
-    // source.subscribe(console.log);
+  /**
+   * @description : mergeAll 
+   */
+  getMergeAll(){
+    const btn = document.getElementById('btn2') as HTMLElement;
+    const clicks = fromEvent(btn,'click');
+    const highOrder = clicks.pipe(map(()=> interval(1000)));
+    const firstOrder = highOrder.pipe(mergeAll());
+
+    firstOrder.subscribe(x => console.log(x));
   }
 }
