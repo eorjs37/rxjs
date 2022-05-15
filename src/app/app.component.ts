@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll } from 'rxjs';
+import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll, take, mergeMap, concatMap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -32,6 +32,16 @@ export class AppComponent implements OnInit{
     //mergeAll
     console.log('getMergeAll');
     this.getMergeAll();
+
+
+    //mergeMap
+    console.log('getMergeMap');
+    this.getMergeMap();
+
+    //concatMap
+    console.log('getConcatMap');
+    this.getConcatMap();
+    
   }
 
   /**
@@ -59,9 +69,49 @@ export class AppComponent implements OnInit{
   getMergeAll(){
     const btn = document.getElementById('btn2') as HTMLElement;
     const clicks = fromEvent(btn,'click');
-    const highOrder = clicks.pipe(map(()=> interval(1000)));
-    const firstOrder = highOrder.pipe(mergeAll());
+    const highOrder = clicks.pipe(
+      map(()=> interval(1000).pipe(take(10)))
+    );
+    const firstOrder = highOrder.pipe(mergeAll(2));
 
     firstOrder.subscribe(x => console.log(x));
+  }
+
+  /**
+   * @description : getMergeMap
+   */
+  getMergeMap(){
+    const letters = of('상급복숭아','중급복숭아','초급복숭아');
+
+    // 0     1     2     3    4     5
+    // a b c
+    // a0 b0 c0 a1 b1 c1
+
+    const result = letters.pipe(
+      mergeMap(
+        x => interval(1000).pipe(
+          take(10),
+          map(i => `${x}${i}세트 `)
+        )
+      )
+    )
+
+    result.subscribe(x => console.log(x));
+  }
+
+
+  /**
+   * @description concatMap
+   */
+  getConcatMap(){
+    const btn3 = document.getElementById('btn3') as HTMLElement;
+    const clicks = fromEvent(btn3,'click');
+    const result = clicks.pipe(
+      concatMap(
+        ev => interval(1000).pipe(take(4))
+      )
+    );
+
+    result.subscribe(x => console.log(x));
   }
 }
