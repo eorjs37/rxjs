@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll, take, mergeMap, concatMap } from 'rxjs';
+import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll, take, mergeMap, concatMap, delay, tap, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,32 +15,9 @@ export class AppComponent implements OnInit{
   }
   
   ngOnInit(){
-    console.log('Subscription');
-    this.subscription = of('복숭아','물고기').pipe(
-      filter(v => v==='복숭아'),
-      map(v=> v+'통조림')
-    ).subscribe(console.log);
 
-    //getFrom
-    console.log('getFrom');
-    this.getFrom();
-
-    //fromEvent
-    console.log('fromEvent');
-    this.fromEvent();
-
-    //mergeAll
-    console.log('getMergeAll');
-    this.getMergeAll();
-
-
-    //mergeMap
-    console.log('getMergeMap');
-    this.getMergeMap();
-
-    //concatMap
-    console.log('getConcatMap');
-    this.getConcatMap();
+    console.log('getSwitchMap');
+    this.getSwitchMap();
     
   }
 
@@ -70,7 +47,7 @@ export class AppComponent implements OnInit{
     const btn = document.getElementById('btn2') as HTMLElement;
     const clicks = fromEvent(btn,'click');
     const highOrder = clicks.pipe(
-      map(()=> interval(1000).pipe(take(10)))
+      map(()=> interval(1000).pipe(take(4)))
     );
     const firstOrder = highOrder.pipe(mergeAll(2));
 
@@ -113,5 +90,87 @@ export class AppComponent implements OnInit{
     );
 
     result.subscribe(x => console.log(x));
+  }
+
+  /**
+   * @description : concatMap2
+   */
+  geConcatMap2(){
+    const source = of(3000,5000);
+
+    const example = source.pipe(
+      concatMap(val => 
+        of(`Delayed by : ${val}ms`).pipe(delay(val))
+      )
+    );
+
+    const subscribe = example.subscribe(
+      val => console.log(`With concatMap : ${val}`)
+    )
+  }
+
+  /**
+   * @description : getMergeMap2
+   */
+  getMergeMap2(){
+    const source = of(3000,5000);
+
+    const mergeMapExample = source.pipe(
+      delay(5000),
+      mergeMap(val => 
+        of(`Delayed by : ${val}ms`).pipe(delay(val))
+      )
+    )
+
+    mergeMapExample.subscribe(val => console.log(`With mergeMap : ${val}`))
+
+  }
+
+
+  /**
+   * @description :mergeMap은 새로운 stream 기준으로 변환하여 새로운 스트림을 생성한다.
+   */
+  getMergeMap3(){
+    //[0,1,2,3,4,5] : 원본
+    from([0,1,2,3,4,5]).pipe(
+      mergeMap(data =>
+        //새로운 스트림
+        interval(data > 2 ? 2000 : 5000)
+          .pipe(
+            take(1),
+            tap(() => console.log(data))
+          )
+      )
+    ).subscribe()
+  }
+
+  /**
+   * @description : concatMap은 원본 기준이 아닌 새로운 스트림 기준이다.
+   * 
+   */
+  getConcatMap3(){
+    //[0,1,2,3,4,5] : 원본
+    from([0,1,2,3,4,5]).pipe(
+      concatMap(data => 
+        interval(data > 2 ? 1000  : 3000).pipe(
+          take(1),
+          tap(() => console.log(data))
+        )
+      )
+    ).subscribe()
+  }
+
+  /**
+   * @description getSwitchMap
+   */
+  getSwitchMap(){
+    const btn = document.getElementById('btn4') as HTMLElement;
+    const source = fromEvent(btn,'click');
+    
+    source.pipe(
+      tap(() => console.log('btn4 click')),
+      switchMap(()=> interval(1000))
+    ).subscribe(console.log)
+
   }
 }
