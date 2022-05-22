@@ -15,8 +15,8 @@ export class AppComponent implements OnInit{
   }
   
   ngOnInit(){
-    console.log('getSwitchMap');
-    this.getSwitchMap();
+    console.log('ngOnInit');
+    
   }
 
   /**
@@ -65,7 +65,7 @@ export class AppComponent implements OnInit{
     const result = letters.pipe(
       mergeMap(
         x => interval(1000).pipe(
-          take(10),
+          take(4),
           map(i => `${x}${i}세트 `)
         )
       )
@@ -73,8 +73,7 @@ export class AppComponent implements OnInit{
 
     result.subscribe(x => console.log(x));
   }
-
-
+  
   /**
    * @description concatMap
    */
@@ -159,7 +158,7 @@ export class AppComponent implements OnInit{
   }
 
   /**
-   * @description getSwitchMap
+   * @description getSwitchMap : 새로운 obserable으로 바꾸고 싶을때 사용
    */
   getSwitchMap(){
     const btn = document.getElementById('btn4') as HTMLElement;
@@ -167,7 +166,7 @@ export class AppComponent implements OnInit{
     
     source.pipe(
       tap(() => console.log('btn4 click')),
-      switchMap(()=> interval(1000))
+      switchMap(()=> interval(1000).pipe(take(4)))
     ).subscribe(console.log)
 
   }
