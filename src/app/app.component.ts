@@ -15,10 +15,8 @@ export class AppComponent implements OnInit{
   }
   
   ngOnInit(){
-
     console.log('getSwitchMap');
     this.getSwitchMap();
-    
   }
 
   /**
