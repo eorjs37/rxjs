@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges, DoCheck } from '@angular/core';
 import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll, take, mergeMap, concatMap, delay, tap, switchMap } from 'rxjs';
 
 @Component({
@@ -6,18 +6,26 @@ import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll, take
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit,OnChanges{
   subscription:Subscription | undefined;
   title = 'ngrx';
 
   constructor(){
+    console.log('1.constructor');
+  }
 
+  ngOnChanges(){
+    console.log('2.ngOnChanges');
   }
   
   ngOnInit(){
-    console.log('ngOnInit');
-    
+    console.log('3.ngOnInit');
   }
+
+  ngDoCheck(){
+    console.log('4.ngDoCheck');
+  }
+
 
   /**
    * @description : getFrom
