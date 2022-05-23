@@ -1,5 +1,5 @@
 import { Component, OnInit, OnChanges, DoCheck } from '@angular/core';
-import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll, take, mergeMap, concatMap, delay, tap, switchMap } from 'rxjs';
+import { Subscription,of, filter, map, from, fromEvent, interval, mergeAll, take, mergeMap, concatMap, delay, tap, switchMap, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +20,13 @@ export class AppComponent implements OnInit,OnChanges{
   
   ngOnInit(){
     console.log('3.ngOnInit');
+    
+
+    this.clickEvent();
+
+    this.rxjsClickEvent();
+
+    this.observable();
   }
 
   ngDoCheck(){
@@ -177,5 +184,55 @@ export class AppComponent implements OnInit,OnChanges{
       switchMap(()=> interval(1000).pipe(take(4)))
     ).subscribe(console.log)
 
+  }
+
+  clickEvent(){
+    const el = document.getElementById('btn6');
+    el?.addEventListener('click',()=>{
+      new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          resolve('성공');
+          //reject('실패');
+        },2000)
+      })
+      .then((res)=>{
+        alert(res)
+      })
+      .catch((err)=>{
+        console.error('error : ',err);
+      })
+    })
+  }
+
+  rxjsClickEvent(){
+    const el = document.getElementById('btn7') as HTMLElement;
+    const source$ = fromEvent(el,'click');
+    source$.pipe(
+      tap((val) => console.log(val)),
+      switchMap(()=> 
+        new Promise((resolve, _) =>{
+          setTimeout(()=>{
+            resolve('성공');
+            //reject('실패');
+          },2000)
+        })
+        .then((res)=>{
+          alert(res)
+        })
+        .catch((err)=>{
+          console.error('error : ',err);
+        })
+      )
+    ).subscribe()
+  }
+
+
+  observable(){
+    const observable = from([1,2,3,4]);
+
+    observable.subscribe((res)=>{
+      console.log('res : ',res);
+      
+    })
   }
 }
