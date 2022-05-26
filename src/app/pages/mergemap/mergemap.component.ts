@@ -12,7 +12,7 @@ export class MergemapComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.click();
+    //this.click();
 
     //ajaxMergeMap
     this.ajaxMergeMap();
@@ -45,5 +45,4 @@ export class MergemapComponent implements OnInit {
     )
     .subscribe(console.log);
   }
-
 }
